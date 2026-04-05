@@ -3,7 +3,8 @@ build/
 compile_commands.json
 
 # User videos — add your own videos here for processing
-videos/
+in_videos/
+out_videos/
 
 # Test outputs
 test_data/*.mp4
