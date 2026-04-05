@@ -146,9 +146,10 @@ void GLRenderer::loadPipeline(const ShaderPipeline& fragmentPaths) {
         GLuint program = linkProgram(vertShader, fragShader);
         glDeleteShader(fragShader);
 
-        // Set the inputTexture sampler to texture unit 0 on each program
+        // Set sampler uniforms: inputTexture on unit 0, originalTexture on unit 1
         glUseProgram(program);
         glUniform1i(glGetUniformLocation(program, "inputTexture"), 0);
+        glUniform1i(glGetUniformLocation(program, "originalTexture"), 1);
 
         m_shaderPrograms.push_back(program);
     }
@@ -179,6 +180,10 @@ void GLRenderer::renderFrame(const std::vector<uint8_t>& input,
         } else {
             glBindTexture(GL_TEXTURE_2D, m_fboTextures[(i + 1) % 2]);
         }
+
+        // Bind original frame to texture unit 1 (available as originalTexture)
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_inputTexture);
 
         glUseProgram(m_shaderPrograms[i]);
 
@@ -262,9 +267,10 @@ void GLRenderer::initFramebuffers() {
 
     for (int i = 0; i < 2; i++) {
         glBindTexture(GL_TEXTURE_2D, m_fboTextures[i]);
-        // Use RGBA8 — GL_RGB8 is not reliably color-renderable on macOS
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        // Use RGBA16F — supports negative values (needed for structure tensor)
+        // and is reliably color-renderable on macOS (unlike GL_RGB8)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_width, m_height, 0,
+                     GL_RGBA, GL_FLOAT, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

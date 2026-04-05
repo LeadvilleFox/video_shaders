@@ -2,8 +2,9 @@
 build/
 compile_commands.json
 
-# User videos — add your own videos here for processing
-videos/
+# User videos — drop your videos into in_videos/ to process them
+in_videos/
+out_videos/
 
 # Test outputs
 test_data/*.mp4
