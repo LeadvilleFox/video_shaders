@@ -1,0 +1,15 @@
+# Build artifacts
+build/
+compile_commands.json
+
+# User videos — add your own videos here for processing
+videos/
+
+# Test outputs
+test_data/*.mp4
+
+# Editor / OS
+.DS_Store
+.cache/
+.vscode/
+.idea/
